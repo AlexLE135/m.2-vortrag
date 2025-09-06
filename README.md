@@ -51,13 +51,13 @@ Die Präsentation ist in 8 Kapitel unterteilt:
 
 ### Bedienung
 - **Tastaturnavigation** - Pfeiltasten und Leertaste
-- **Responsive Design** - Optimiert für Desktop, Tablet und Mobile
+- **Responsive Design** - Optimiert für Desktop, Tablet und Mobile (noch nicht fertig)
 - **Dark Mode** - Augenschonendes Farbschema
 - **Smooth Animations** - Flüssige Übergänge und Animationen
 
 ## 📁 Projektstruktur
 
-```
+Alles noch vorläufig da noch bilder etc. fehlen.```
 M.2-Vortrag/
 ├── index.html              # Hauptpräsentation
 ├── template.html           # Alternatives Template
@@ -97,50 +97,20 @@ M.2-Vortrag/
 
 ## 👥 Mitwirkende
 
-- **Alexander Schneider** - Konzeption und Entwicklung
-- **Michael Worm** - Technische Inhalte und Recherche
-
-## 📚 Pädagogischer Ansatz
-
-Diese Präsentation verwendet mehrere Lernmethoden:
-- **Multimodales Lernen** - Visuelle, interaktive und textuelle Inhalte
-- **Progressive Wissensvermittlung** - Schrittweiser Komplexitätsaufbau
-- **Praktische Anwendung** - Realwelt-Beispiele und Entscheidungshilfen
-- **Selbstüberprüfung** - Integriertes Quiz-Modul
+- **Alexander Schneider** - Konzeption, Entwicklung, Technische Inhalte und Recherche
+- **Michael Worm** - Mitwirkend am Vortrag
 
 ## 🔧 Technische Details
 
 ### Performance
 - **Ladezeit** < 2 Sekunden
 - **Animationsperformance** 60fps
-- **Mobile Optimierung** Touch-friendly Interface
+- **Mobile Optimierung** Touch-friendly Interface (demnächst)
 
 ### Barrierefreiheit
 - **WCAG AA Konform** - Angemessener Farbkontrast
 - **Tastaturnavigation** - Vollständige Keyboard-Support
 - **Screen Reader** - Semantische HTML-Struktur
-
-## 📊 Technische Spezifikationen
-
-### Unterstützte Formfaktoren
-- 2230 (22 × 30 mm)
-- 2242 (22 × 42 mm) 
-- 2260 (22 × 60 mm)
-- 2280 (22 × 80 mm) - **Standard**
-- 22110 (22 × 110 mm)
-
-### Keying-Systeme
-- **Key B** - SATA und PCIe x2
-- **Key M** - PCIe x4 (NVMe)
-- **Key B+M** - Maximale Kompatibilität
-- **Key A/E** - WLAN/Bluetooth Module
-
-### Performance-Vergleich
-| Merkmal | SATA | NVMe |
-|---------|------|------|
-| Max. Durchsatz | ~550 MB/s | ~7000 MB/s |
-| Latenz | 30-100 µs | 2-20 µs |
-| IOPS | ~100.000 | >500.000 |
 
 ## 🌐 Kompatibilität
 
@@ -148,13 +118,12 @@ Diese Präsentation verwendet mehrere Lernmethoden:
 - Chrome 90+
 - Firefox 88+
 - Safari 14+
-- Edge 90+
 
 **Unterstützte Geräte:**
 - Desktop-Computer
 - Laptops
 - Tablets
-- Smartphones
+- Smartphones (nur bedingt)
 
 ## 📝 Lizenz
 
@@ -169,24 +138,8 @@ Beiträge sind willkommen! Bitte beachten Sie:
 4. Push zum Branch
 5. Erstelle einen Pull Request
 
-## 📞 Support
-
-Bei Fragen oder Problemen:
-1. Issues im Repository öffnen
-2. Technische Dokumentation lesen
-3. Browser-Konsole für Debug-Informationen nutzen
-
-## 🔮 Zukunftsperspektiven
-
-Geplante Erweiterungen:
-- [ ] Mehrsprachige Unterstützung
-- [ ] Erweiterte Quiz-Funktionalität
-- [ ] 3D-Modelle für bessere Visualisierung
-- [ ] Offline-Funktionalität (PWA)
-- [ ] Integration mit LMS-Systemen
-
 ---
 
-**Developed with ❤️ for FI-S 25/02**
+**Entwickelt mit ❤️ für FI-S/A 25/02**
 
-*Letzte Aktualisierung: September 2025*
+*Letzte Aktualisierung: 06.09.2025*
