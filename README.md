@@ -57,7 +57,9 @@ Die Präsentation ist in 8 Kapitel unterteilt:
 
 ## 📁 Projektstruktur
 
-Alles noch vorläufig da noch bilder etc. fehlen.```
+Vorläufig!
+
+```
 M.2-Vortrag/
 ├── index.html              # Hauptpräsentation
 ├── template.html           # Alternatives Template
@@ -68,6 +70,7 @@ M.2-Vortrag/
 ├── push/                   # Zusätzliche Ressourcen
 ├── research_paper_deepcode.md # Technische Dokumentation
 └── README.md              # Diese Datei
+```
 ```
 
 ## 🚀 Installation und Nutzung
