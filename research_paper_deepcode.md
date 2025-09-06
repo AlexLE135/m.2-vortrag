@@ -7,6 +7,7 @@
 **Course:** FI-S 25/02  
 **Project Type:** Interactive HTML-based educational presentation  
 **Technology Stack:** HTML5, CSS3, JavaScript, Tailwind CSS  
+**GitHub Repository:** https://github.com/AlexLE135/m.2-vortrag  
 
 ## 1. Introduction
 
@@ -263,6 +264,7 @@ The codebase represents a model example of how technical education can be transf
 ---
 
 **Research Paper Prepared For:** DeepCode Analysis Project  
+**GitHub Repository:** https://github.com/AlexLE135/m.2-vortrag  
 **Date:** September 6, 2025  
 **Analysis Depth:** Comprehensive technical and educational assessment  
 **Recommendation Level:** High - Exemplary project for technical education innovation
