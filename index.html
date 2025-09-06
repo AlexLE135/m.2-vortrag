@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Schnittstelle M.2 - Vortrag von Alexander Schneider & Michael Worm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e5e7eb;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+        
+        /* Welcome Screen */
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #1f2937 0%, #111827 100%);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .presenter-info {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+        }
+        
+        .course-info {
+            font-size: 1.25rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+        
+        .start-btn {
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+        }
+        
+        /* Presentation Sections */
+        .presentation-container {
+            max-width: 4xl;
+            margin: 0 auto;
+            padding: 2rem;
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .section {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #4f46e5;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: #1f2937;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 300px;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #374151;
+            color: #e5e7eb;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-width: 100px;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            background-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .step-indicator {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #9ca3af;
+            margin: 0 1rem;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .presenter-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(17, 24, 39, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            border-top: 1px solid #374151;
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2.5rem;
+            }
+            .presenter-info {
+                font-size: 1.25rem;
+            }
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+<!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="welcome-title">Die Schnittstelle M.2</h1>
+        <p class="presenter-info">Vortrag von Alexander Schneider & Michael Worm</p>
+        <p class="course-info">FI-S 25/02</p>
+        
+        <!-- Inhaltsverzeichnis auf Startseite -->
+        <div class="mt-8 mb-8 max-w-md mx-auto text-left">
+            <h2 class="text-xl font-semibold text-gray-300 mb-4 text-center">Inhaltsverzeichnis</h2>
+            <ol class="text-gray-300 space-y-2 text-sm">
+                <li>1. Grundlagen und Definition</li>
+                <li>2. Physische Merkmale I: Formfaktoren</li>
+                <li>3. Physische Merkmale II: Keying (Kodierung)</li>
+                <li>4. Leistungsunterschiede: NVMe vs. SATA</li>
+                <li>5. Anwendungsfälle und Auswahlkriterien</li>
+                <li>6. Einbau und Konfiguration</li>
+                <li>7. Vorteile und Herausforderungen</li>
+                <li>8. Ausblick und Zukunft</li>
+            </ol>
+        </div>
+        
+        <button class="start-btn" onclick="startPresentation()">Präsentation Starten</button>
+    </div>
+
+    <!-- Presentation Container -->
+    <div class="presentation-container" id="presentationContainer">
+        <!-- Section 1: Grundlagen -->
+        <div class="section" id="section1">
+            <div class="slide-number">1/8</div>
+            <h1 class="section-title">Grundlagen und Definition</h1>
+            <div class="content-section">
+                <p class="mb-4 text-lg"><strong class="text-indigo-400">Definition:</strong> M.2, ursprünglich als NGFF (Next Generation Form Factor) bekannt, ist ein Standard für interne Erweiterungskarten. Er löste mSATA ab und bietet höhere Flexibilität und Leistung auf kleinerem Raum.</p>
+                <p class="text-lg"><strong class="text-indigo-400">Motivation:</strong> Die Entwicklung wurde durch den Bedarf an immer kleineren und leistungsfähigeren Komponenten für Ultrabooks und andere kompakte Systeme angetrieben.</p>
+            </div/>
+        </div>
+
+        <!-- Section 2: Formfaktoren -->
+        <div class="section" id="section2">
+            <div class="slide-number">2/8</div>
+            <h1 class="section-title">Physische Merkmale I: Formfaktoren</h1>
+            <div class="content-section">
+                <p class="mb-4 text-lg">Die Größe einer M.2-Karte wird durch eine Zahlenkombination wie "2280" definiert. Die ersten beiden Ziffern geben die Breite (meist 22 mm) an, die folgenden die Länge in Millimetern. Wähle eine Länge, um die Skalierung zu visualisieren.</p>
+                
+                <div class="flex flex-wrap gap-2 mb-6 justify-center" id="formFactorButtons">
+                    <button class="nav-btn" data-length="30">2230</button>
+                    <button class="nav-btn" data-length="42">2242</button>
+                    <button class="nav-btn" data-length="60">2260</button>
+                    <button class="nav-btn active" data-length="80" style="background-color: #4f46e5;">2280</button>
+                    <button class="nav-btn" data-length="110">22110</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-gray-800 p-6 rounded-lg max-w-md mx-auto">
+                        <div class="flex items-center">
+                            <span class="text-sm mr-3 w-16 text-center font-semibold" id="ssdLabel">2280</span>
+                            <div class="w-full bg-gray-900 rounded-lg p-3">
+                                <div class="ssd-visualization" id="ssdVisualization" style="width: 70%; height: 22px; background-color: #4f46e5; border-radius: 4px; position: relative;">
+                                    <div style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background-color: #9ca3af; border-radius: 50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2 text-center">Die Länge der Visualisierung entspricht dem tatsächlichen Verhältnis</p>
+                    </div>
+                    <div>
+                        <img src="bider/1.jpg" alt="M.2 Formfaktoren" class="rounded-lg shadow-lg w-full">
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <h3 class="text-indigo-400 font-semibold text-sm">2230</h3>
+                        <p class="text-xs">22 × 30 mm</p>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <h3 class="text-indigo-400 font-semibold text-sm">2242</h3>
+                        <p class="text-xs">22 × 42 mm</p>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <h3 class="text-indigo-400 font-semibold text-sm">2260</h3>
+                        <p class="text-xs">22 × 60 mm</p>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <h3 class="text-indigo-400 font-semibold text-sm">2280</h3>
+                        <p class="text-xs">22 × 80 mm</p>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <h3 class="text-indigo-400 font-semibold text-sm">22110</h3>
+                        <p class="text-xs">22 × 110 mm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Keying -->
+        <div class="section" id="section3">
+            <div class="slide-number">3/8</div>
+            <h1 class="section-title">Physische Merkmale II: Keying (Kodierung)</h1>
+            <div class="content-section">
+                <p class="mb-4 text-lg text-center">Die Kerben ("Keys") im Anschluss einer M.2-Karte verhindern, dass sie in einen inkompatiblen Steckplatz gesteckt wird. Jeder Key ist für bestimmte Protokolle vorgesehen.</p>
+                
+                <div class="flex flex-wrap gap-2 mb-6 justify-center" id="keyingButtons">
+                    <button class="nav-btn active" data-key="b" style="background-color: #4f46e5;">Key B</button>
+                    <button class="nav-btn" data-key="m">Key M</button>
+                    <button class="nav-btn" data-key="b+m">Key B+M</button>
+                    <button class="nav-btn" data-key="a">Key A</button>
+                    <button class="nav-btn" data-key="e">Key E</button>
+                    <button class="nav-btn" data-key="a+e">Key A+E</button>
+                </div>
+                
+                <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="space-y-8">
+                        <!-- Visual Key Pattern -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-white mb-4 text-center">Pin-Layout Visualisierung</h3>
+                            <div class="key-visualization mx-auto" style="max-width: 300px;">
+                                <div class="bg-gray-700 p-4 rounded-lg">
+                                    <div class="text-xs text-gray-400 mb-2 text-center">M.2 Connector Edge</div>
+                                    <div id="keyPattern" class="relative h-16 bg-gray-600 rounded flex items-center justify-between px-2">
+                                        
+                                        <!-- Key B Pattern -->
+                                        <div class="absolute left-1 top-1 bottom-1 w-2 bg-blue-500 rounded" id="keyB" style="display: none;"></div>
+                                        <div class="absolute left-4 top-1 bottom-1 w-3 bg-gray-500 rounded" style="display: none;"></div>
+                                        
+                                        <!-- Key A Pattern -->
+                                        <div class="absolute left-2 top-1 bottom-1 w-2 bg-purple-500 rounded" id="keyA" style="display: none;"></div>
+                                        <div class="absolute left-6 top-1 bottom-1 w-3 bg-gray-500 rounded" style="display: none;"></div>
+                                        
+                                        <!-- Key E Pattern -->
+                                        <div class="absolute left-6 top-1 bottom-1 w-2 bg-orange-500 rounded" id="keyE" style="display: none;"></div>
+                                        <div class="absolute left-10 top-1 bottom-1 w-3 bg-gray-500 rounded" style="display: none;"></div>
+                                        
+                                        <!-- Key M Pattern -->
+                                        <div class="absolute right-2 top-1 bottom-1 w-2 bg-green-500 rounded" id="keyM" style="display: none;"></div>
+                                        <div class="absolute right-6 top-1 bottom-1 w-3 bg-gray-500 rounded" style="display: none;"></div>
+                                        
+                                        <!-- Pin numbers -->
+                                        <div class="absolute inset-0 flex justify-between items-center text-xs text-gray-300 px-1">
+                                            <span>Pin 1</span>
+                                            <span>Pin 75</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-2 text-center" id="keyLabel">Key B: Kerbe nach Pin 6</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <img src="bider/2.png" alt="M.2 Keying" class="rounded-lg shadow-lg w-full">
+                        </div>
+                    </div>
+                    
+                    <!-- Technical Details -->
+                    <div id="keyDescription" class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-white mb-4">Key B</h3>
+                        <p class="text-gray-300 mb-4">
+                            Einzelne Kerbe nach Pin 6 – unterstützt meist PCIe x2 und SATA; typisch für legacy Anwendungen, Gateways und Feldgeräte.
+                        </p>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between py-2 border-b border-gray-700">
+                                <span class="text-gray-400">Position:</span>
+                                <span class="text-white font-medium">Kerbe nach Pin 6</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-700">
+                                <span class="text-gray-400">PCIe-Lanes:</span>
+                                <span class="text-white font-medium">2x PCIe oder SATA</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span class="text-gray-400">Verwendung:</span>
+                                <span class="text-white font-medium">Legacy-SSDs, Gateways</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: NVMe vs SATA - Korrekte technische Spezifikationen -->
+        <div class="section" id="section4">
+            <div class="slide-number">4/8</div>
+            <h1 class="section-title">Leistungsunterschiede: NVMe vs. SATA</h1>
+            <div class="content-section">
+                <p class="mb-6 text-lg text-center">Obwohl beide das M.2-Format nutzen können, sind die Leistungsunterschiede fundamental. NVMe wurde von Grund auf für Flash-Speicher über die schnelle PCIe-Schnittstelle entwickelt, während SATA ein älteres Protokoll für mechanische Festplatten ist.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Technische Details Tabelle -->
+                    <div class="bg-gray-800 rounded-lg overflow-hidden">
+                        <h3 class="text-xl font-semibold text-white p-4 bg-gray-700">Technische Spezifikationen</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-700 text-white">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left">Feature</th>
+                                        <th class="px-4 py-3 text-center">SATA (AHCI)</th>
+                                        <th class="px-4 py-3 text-center">NVMe (PCIe)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-300">
+                                    <tr class="border-b border-gray-600 hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">Latenz</td>
+                                        <td class="px-4 py-3 text-center text-red-400">30–100 µs</td>
+                                        <td class="px-4 py-3 text-center text-green-400">2–20 µs</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">IOPS</td>
+                                        <td class="px-4 py-3 text-center text-red-400">~100.000</td>
+                                        <td class="px-4 py-3 text-center text-green-400">> 500.000</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">Warteschlangen</td>
+                                        <td class="px-4 py-3 text-center text-red-400">1 × 32 Befehle</td>
+                                        <td class="px-4 py-3 text-center text-green-400">65.536 × 65.536</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">Max. Bandbreite</td>
+                                        <td class="px-4 py-3 text-center text-red-400">~550 MB/s</td>
+                                        <td class="px-4 py-3 text-center text-green-400">8.000+ MB/s</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">Parallele Verarbeitung</td>
+                                        <td class="px-4 py-3 text-center text-red-400">Stark limitiert</td>
+                                        <td class="px-4 py-3 text-center text-green-400">Enorme Parallelisierung</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-700">
+                                        <td class="px-4 py-3 font-medium">Protokolldesign</td>
+                                        <td class="px-4 py-3 text-center text-red-400">Für HDDs entwickelt</td>
+                                        <td class="px-4 py-3 text-center text-green-400">Speziell für SSDs</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Detaillierte Vergleiche -->
+                    <div class="space-y-6">
+                        <div class="bg-red-900/20 p-6 rounded-lg border border-red-800">
+                            <h3 class="text-red-400 font-semibold mb-4 text-lg">SATA (AHCI) - Limitierungen</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li><span class="text-red-400">⏱️</span> Höhere Latenz durch AHCI-Overhead</li>
+                                <li><span class="text-red-400">📊</span> ~100.000 IOPS Maximum</li>
+                                <li><span class="text-red-400">🚦</span> 1 Warteschlange, 32 Befehle Limit</li>
+                                <li><span class="text-red-400">⚡</span> Max. ~550 MB/s (SATA 3.0)</li>
+                                <li><span class="text-red-400">🔧</span> Ursprünglich für HDDs entwickelt</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-green-900/20 p-6 rounded-lg border border-green-800">
+                            <h3 class="text-green-400 font-semibold mb-4 text-lg">NVMe (PCIe) - Vorteile</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li><span class="text-green-400">⚡</span> Extrem niedrige Latenz (2-20 µs)</li>
+                                <li><span class="text-green-400">🚀</span> > 500.000 IOPS (bis 1M+)</li>
+                                <li><span class="text-green-400">🔄</span> 65.536 Warteschlangen × 65.536 Befehle</li>
+                                <li><span class="text-green-400">📈</span> PCIe 4.0: bis 7.000 MB/s, PCIe 5.0: 10.000+ MB/s</li>
+                                <li><span class="text-green-400">🎯</span> Speziell für Flash-Speicher optimiert</li>
+                            </ul>
+                        </div>
+
+                        <!-- Zusätzliche technische Details -->
+                        <div class="bg-blue-900/20 p-6 rounded-lg border border-blue-800">
+                            <h3 class="text-blue-400 font-semibold mb-4 text-lg">Zusätzliche Faktoren</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <h4 class="text-blue-300 font-medium mb-2">Energieeffizienz</h4>
+                                    <p class="text-gray-300">NVMe-SSDs verbrauchen unter Volllast mehr, sind aber im Leerlauf effizienter da Aufgaben schneller erledigt werden.</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-blue-300 font-medium mb-2">Flexibilität</h4>
+                                    <p class="text-gray-300">M.2 ist nur der Formfaktor - achten Sie auf die Kompatibilität zwischen Slot und SSD (Keying beachten!).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Anwendungsfälle und Auswahlkriterien -->
+        <div class="section" id="section5">
+            <div class="slide-number">5/8</div>
+            <h1 class="section-title">Anwendungsfälle und Auswahlkriterien</h1>
+            <div class="content-section">
+                <p class="mb-6 text-lg text-center">Die Wahl zwischen SATA und NVMe M.2-SSDs hängt von Ihren spezifischen Anforderungen ab. Hier finden Sie eine Übersicht der verschiedenen Anwendungsfälle.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Anwendungsfälle -->
+                    <div class="space-y-6">
+                        <div class="bg-green-900/20 p-6 rounded-lg border border-green-800">
+                            <h3 class="text-green-400 font-semibold mb-4 text-xl">✅ SATA M.2 - Ideal für:</h3>
+                            <ul class="space-y-3 text-sm">
+                                <li><span class="text-green-400">💻</span> <strong>Budget-Systeme:</strong> Günstigere Alternative zu 2,5" SATA-SSDs</li>
+                                <li><span class="text-green-400">🔄</span> <strong>Upgrades:</strong> Ältere Systeme mit SATA-Limitationen</li>
+                                <li><span class="text-green-400">📚</span> <strong>Datenspeicher:</strong> Große Dateien, weniger häufige Zugriffe</li>
+                                <li><span class="text-green-400">🏢</span> <strong>Büroanwendungen:</strong> Word, Excel, E-Mail, Webbrowsing</li>
+                                <li><span class="text-green-400">🎮</span> <strong>Gaming (Entry-Level):</strong> Spielespeicher, moderate Ladezeiten akzeptabel</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-blue-900/20 p-6 rounded-lg border border-blue-800">
+                            <h3 class="text-blue-400 font-semibold mb-4 text-xl">🚀 NVMe M.2 - Ideal für:</h3>
+                            <ul class="space-y-3 text-sm">
+                                <li><span class="text-blue-400">⚡</span> <strong>High-Performance:</strong> Gaming, Video-Editing, 3D-Rendering</li>
+                                <li><span class="text-blue-400">🖥️</span> <strong>Workstations:</strong> Professionelle Anwendungen, große Datensätze</li>
+                                <li><span class="text-blue-400">🎯</span> <strong>System-Festplatte:</strong> Betriebssystem und Programme</li>
+                                <li><span class="text-blue-400">📊</span> <strong>Datenbanken:</strong> Hohe IOPS-Anforderungen</li>
+                                <li><span class="text-blue-400">🔬</span> <strong>Wissenschaftliche Anwendungen:</strong> Simulationen, Datenanalyse</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Auswahlkriterien -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-white mb-4">Entscheidungshilfe</h3>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-yellow-500 pl-4">
+                                    <h4 class="text-yellow-400 font-medium mb-2">Wählen Sie SATA wenn:</h4>
+                                    <ul class="text-sm text-gray-300 space-y-1">
+                                        <li>• Budget ist begrenzt</li>
+                                        <li>• Ihr Mainboard nur SATA unterstützt</li>
+                                        <li>• Sie hauptsächlich Büroanwendungen nutzen</li>
+                                        <li>• Sie von einer HDD upgraden</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="border-l-4 border-green-500 pl-4">
+                                    <h4 class="text-green-400 font-medium mb-2">Wählen Sie NVMe wenn:</h4>
+                                    <ul class="text-sm text-gray-300 space-y-1">
+                                        <li>• Sie maximale Performance benötigen</li>
+                                        <li>• Ihr Mainboard PCIe unterstützt</li>
+                                        <li>• Sie professionelle Anwendungen nutzen</li>
+                                        <li>• Zukunftssicherheit wichtig ist</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preis-Leistungs-Vergleich -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-white mb-4">Preis-Leistungs-Vergleich</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">SATA M.2 (1TB):</span>
+                                    <span class="text-white">€40-80</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">NVMe M.2 (1TB):</span>
+                                    <span class="text-white">€60-200+</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-400">Performance-Gewinn:</span>
+                                    <span class="text-green-400">3-15x schneller</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3 text-center">Preise variieren je nach Marke und Modell</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Einbau und Kompatibilität -->
+        <div class="section" id="section6">
+            <div class="slide-number">6/8</div>
+            <h1 class="section-title">Einbau und Konfiguration</h1>
+            <div class="content-section">
+                <ol class="list-decimal list-inside space-y-4 text-lg">
+                    <li><strong class="text-indigo-400">Slot auswählen:</strong> Key-Typ und Länge beachten</li>
+                    <li><strong class="text-indigo-400">Modul einsetzen:</strong> Im 30°-Winkel einführen</li>
+                    <li><strong class="text-indigo-400">Fixieren:</strong> Herunterdrücken und sichern</li>
+                    <li><strong class="text-indigo-400">BIOS prüfen:</strong> Erkennung kontrollieren</li>
+                    <li><strong class="text-indigo-400">Partitionierung:</strong> GPT-Schema und Formatierung</li>
+                </ol>
+                <div class="mt-6 p-4 bg-yellow-900/20 rounded-lg border border-yellow-800">
+                    <p class="text-yellow-400">⚠️ Wichtig: Abstandshalter und passende Schrauben sind erforderlich!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: Vor- und Nachteile -->
+        <div class="section" id="section7">
+            <div class="slide-number">7/8</div>
+            <h1 class="section-title">Vorteile und Herausforderungen</h1>
+            <div class="content-section">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-900/20 p-6 rounded-lg">
+                        <h3 class="text-green-400 font-semibold mb-4 text-xl">✅ Vorteile</h3>
+                        <ul class="space-y-2">
+                            <li>Kompakte Bauform</li>
+                            <li>Hohe Datentransferraten</li>
+                            <li>Flexible Nutzung</li>
+                            <li>Zukunftssicher</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-900/20 p-6 rounded-lg">
+                        <h3 class="text-red-400 font-semibold mb-4 text-xl">⚠️ Herausforderungen</h3>
+                        <ul class="space-y-2">
+                            <li>Wärmeentwicklung</li>
+                            <li>Kompatibilitätsprüfung</li>
+                            <li>Mechanische Installation</li>
+                            <li>Preisunterschiede</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8: Ausblick -->
+        <div class="section" id="section8">
+            <div class="slide-number">8/8</div>
+            <h1 class="section-title">Ausblick</h1>
+            <div class="content-section">
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <span class="text-2xl">📈</span>
+                        <div>
+                            <h3 class="text-indigo-400 font-semibold">PCIe Gen 5 & 6</h3>
+                            <p class="text-gray-300">Durchsatz bis zu 14 GB/s möglich</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="text-2xl">🏗️</span>
+                        <div>
+                            <h3 class="text-indigo-400 font-semibold">Kompaktere Geräte</h3>
+                            <p class="text-gray-300">Integration in Ultrabooks und Mini-PCs</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="text-2xl">📡</span>
+                        <div>
+                            <h3 class="text-indigo-400 font-semibold">Neue Funk-Module</h3>
+                            <p class="text-gray-300">Wi-Fi 7 und 5G-Module für M.2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="previousSection()" disabled>Zurück</button>
+            <span class="step-indicator" id="stepIndicator">1 / 8</span>
+            <button class="nav-btn" id="nextBtn" onclick="nextSection()">Weiter</button>
+        </div>
+    </div>
+
+    <div class="presenter-footer">
+        Vortrag: Die Schnittstelle M.2 | Alexander Schneider & Michael Worm | FI-S 25/02
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 8;
+
+        function startPresentation() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('presentationContainer').style.display = 'block';
+            showSection(1); // Start with section 1
+        }
+
+        function showSection(sectionNumber) {
+            // Hide all sections
+            for (let i = 1; i <= totalSections; i++) {
+                const section = document.getElementById(`section${i}`);
+                if (section) {
+                    section.classList.remove('active');
+                }
+            }
+
+            // Show current section
+            const currentSectionElement = document.getElementById(`section${sectionNumber}`);
+            if (currentSectionElement) {
+                currentSectionElement.classList.add('active');
+            }
+
+            // Update navigation
+            document.getElementById('prevBtn').disabled = (sectionNumber === 1);
+            document.getElementById('nextBtn').disabled = (sectionNumber === totalSections);
+            document.getElementById('stepIndicator').textContent = `${sectionNumber} / ${totalSections}`;
+
+            // Update current section
+            currentSection = sectionNumber;
+        }
+
+        function nextSection() {
+            if (currentSection < totalSections) {
+                showSection(currentSection + 1);
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 1) {
+                showSection(currentSection - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('presentationContainer').style.display === 'block') {
+                switch(event.key) {
+                    case 'ArrowRight':
+                    case 'Space':
+                        event.preventDefault();
+                        nextSection();
+                        break;
+                    case 'ArrowLeft':
+                        event.preventDefault();
+                        previousSection();
+                        break;
+                    case 'Home':
+                        event.preventDefault();
+                        showSection(1);
+                        break;
+                    case 'End':
+                        event.preventDefault();
+                        showSection(totalSections);
+                        break;
+                }
+            }
+        });
+
+        // Formfaktoren Interaktivität
+        function setupFormFactorInteractivity() {
+            const formFactorButtons = document.getElementById('formFactorButtons');
+            const ssdVisualization = document.getElementById('ssdVisualization');
+            const ssdLabel = document.getElementById('ssdLabel');
+            
+            if (!formFactorButtons || !ssdVisualization || !ssdLabel) return;
+            
+            const formFactors = {
+                '30': '30%',
+                '42': '40%', 
+                '60': '55%', 
+                '80': '70%', 
+                '110': '100%' 
+            };
+
+            formFactorButtons.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    // Klassenmanagement für Buttons
+                    formFactorButtons.querySelectorAll('.nav-btn').forEach(btn => {
+                        btn.style.backgroundColor = '';
+                        btn.classList.remove('active');
+                    });
+                    e.target.style.backgroundColor = '#4f46e5';
+                    e.target.classList.add('active');
+                    
+                    const length = e.target.dataset.length;
+                    ssdVisualization.style.width = formFactors[length];
+                    ssdLabel.textContent = `22${length}`;
+                }
+            });
+        }
+
+        // Keying Interaktivität
+        function setupKeyingInteractivity() {
+            const keyingButtons = document.getElementById('keyingButtons');
+            const keyDescription = document.getElementById('keyDescription');
+            
+            if (!keyingButtons || !keyDescription) return;
+            
+            const keyingData = {
+                b: {
+                    title: 'Key B',
+                    desc: 'Einzelne Kerbe an den Pins 12-19 – unterstützt SATA und/oder PCIe x2.',
+                    details: {
+                        position: 'Pins 12-19',
+                        lanes: 'PCIe x2, SATA',
+                        usage: 'SATA SSDs, einige NVMe SSDs'
+                    }
+                },
+                m: {
+                    title: 'Key M',
+                    desc: 'Einzelne Kerbe an den Pins 59-66 – unterstützt SATA und/oder PCIe x4.',
+                    details: {
+                        position: 'Pins 59-66',
+                        lanes: 'PCIe x4, SATA',
+                        usage: 'NVMe SSDs'
+                    }
+                },
+                'b+m': {
+                    title: 'Key B+M',
+                    desc: 'Zwei Kerben, maximale Kompatibilität, aber auf PCIe x2 beschränkt.',
+                    details: {
+                        position: 'Zwei Kerben',
+                        lanes: 'PCIe x2, SATA',
+                        usage: 'SATA SSDs, ältere NVMe SSDs'
+                    }
+                },
+                a: {
+                    title: 'Key A',
+                    desc: 'Kerbe an den Pins 8-15. Für Wi-Fi und Bluetooth Karten.',
+                    details: {
+                        position: 'Pins 8-15',
+                        interfaces: 'PCIe, USB',
+                        usage: 'Wi-Fi, Bluetooth'
+                    }
+                },
+                e: {
+                    title: 'Key E',
+                    desc: 'Kerbe an den Pins 24-31. Für Wi-Fi und Bluetooth Karten.',
+                    details: {
+                        position: 'Pins 24-31',
+                        interfaces: 'PCIe, USB',
+                        usage: 'Wi-Fi, Bluetooth'
+                    }
+                },
+                'a+e': {
+                    title: 'Key A+E',
+                    desc: 'Zwei Kerben für Wi-Fi und Bluetooth Karten.',
+                    details: {
+                        position: 'Zwei Kerben',
+                        interfaces: 'PCIe, USB',
+                        usage: 'Wi-Fi, Bluetooth'
+                    }
+                }
+            };
+
+            function updateKeyingView(key) {
+                const data = keyingData[key];
+                
+                // Update key description with German labels
+                keyDescription.innerHTML = `
+                    <h3 class="text-2xl font-semibold text-center text-white mb-4">${data.title}</h3>
+                    <p class="text-gray-300 text-center mb-6 max-w-2xl mx-auto">${data.desc}</p>
+                    <div class="max-w-md mx-auto">
+                        ${Object.entries(data.details).map(([key, value]) => {
+                            const germanLabels = {
+                                'position': 'Position',
+                                'lanes': 'PCIe-Lanes',
+                                'usage': 'Verwendung',
+                                'interfaces': 'Schnittstellen'
+                            };
+                            return `
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">${germanLabels[key] || key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                                    <span class="text-white font-medium">${value}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            keyingButtons.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    keyingButtons.querySelectorAll('.nav-btn').forEach(btn => {
+                        btn.style.backgroundColor = '';
+                        btn.classList.remove('active');
+                    });
+                    e.target.style.backgroundColor = '#4f46e5';
+                    e.target.classList.add('active');
+                    updateKeyingView(e.target.dataset.key);
+                }
+            });
+
+            // Initial view
+            updateKeyingView('b');
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ensure welcome screen is visible initially
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            document.getElementById('presentationContainer').style.display = 'none';
+            
+            // Setup interactivity when sections are loaded
+            setupFormFactorInteractivity();
+        });
+
+        // Re-setup interactivity when section becomes visible
+        function showSection(sectionNumber) {
+            // Hide all sections
+            for (let i = 1; i <= totalSections; i++) {
+                const section = document.getElementById(`section${i}`);
+                if (section) {
+                    section.classList.remove('active');
+                }
+            }
+
+            // Show current section
+            const currentSectionElement = document.getElementById(`section${sectionNumber}`);
+            if (currentSectionElement) {
+                currentSectionElement.classList.add('active');
+                
+                // Re-setup interactivity for form factors and keying (only once)
+                if (sectionNumber === 2 && !window.formFactorsSetup) {
+                    setTimeout(() => {
+                        setupFormFactorInteractivity();
+                        window.formFactorsSetup = true;
+                    }, 100);
+                } else if (sectionNumber === 3 && !window.keyingSetup) {
+                    setTimeout(() => {
+                        setupKeyingInteractivity();
+                        window.keyingSetup = true;
+                    }, 100);
+                }
+            }
+
+            // Update navigation
+            document.getElementById('prevBtn').disabled = (sectionNumber === 1);
+            document.getElementById('nextBtn').disabled = (sectionNumber === totalSections);
+            document.getElementById('stepIndicator').textContent = `${sectionNumber} / ${totalSections}`;
+
+            // Update current section
+            currentSection = sectionNumber;
+        }
+    </script>
+</body>
+</html>NSS</td>
+                                    <td class="px-4 py-3 text-center">SSD/Host Interface</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                targetSection.appendChild(tableContainer);
+            }
+            
+            // Tabelle nach Ladung hinzufügen
+            setupTechnicalTable();
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ensure welcome screen is visible initially
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            document.getElementById('presentationContainer').style.display = 'none';
+            
+            // Setup interactivity when sections are loaded
+            setupFormFactorInteractivity();
+        });
+
+        // Re-setup interactivity when section becomes visible
+        function showSection(sectionNumber) {
+            // Hide all sections
+            for (let i = 1; i <= totalSections; i++) {
+                const section = document.getElementById(`section${i}`);
+                if (section) {
+                    section.classList.remove('active');
+                }
+            }
+
+            // Show current section
+            const currentSectionElement = document.getElementById(`section${sectionNumber}`);
+            if (currentSectionElement) {
+                currentSectionElement.classList.add('active');
+                
+                // Re-setup interactivity for form factors and keying (only once)
+                if (sectionNumber === 2 && !window.formFactorsSetup) {
+                    setTimeout(() => {
+                        setupFormFactorInteractivity();
+                        window.formFactorsSetup = true;
+                    }, 100);
+                } else if (sectionNumber === 3 && !window.keyingSetup) {
+                    setTimeout(() => {
+                        setupKeyingInteractivity();
+                        window.keyingSetup = true;
+                    }, 100);
+                }
+            }
+
+            // Update navigation
+            document.getElementById('prevBtn').disabled = (sectionNumber === 1);
+            document.getElementById('nextBtn').disabled = (sectionNumber === totalSections);
+            document.getElementById('stepIndicator').textContent = `${sectionNumber} / ${totalSections}`;
+
+            // Update current section
+            currentSection = sectionNumber;
+        }
+    </script>
+</body>
+</html>
